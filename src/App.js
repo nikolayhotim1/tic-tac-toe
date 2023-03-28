@@ -1,7 +1,5 @@
 import { useState } from 'react'
 
-let currentMove = 0
-
 function Square({ value, onSquareClick }) {
 	return (
 		<button className='square' onClick={onSquareClick}>
@@ -10,23 +8,12 @@ function Square({ value, onSquareClick }) {
 	)
 }
 
-export default function Board() {
-	const [xIsNext, setXIsNext] = useState(true)
-	const [squares, setSquares] = useState(Array(9).fill(null))
-
+function Board({ xIsNext, squares, onPlay, resetGame, currentMove }) {
 	function handleClick(i) {
 		if (calculateWinner(squares) || squares[i]) return
 		const nextSquares = squares.slice()
 		xIsNext ? (nextSquares[i] = 'X') : (nextSquares[i] = 'O')
-		setSquares(nextSquares)
-		setXIsNext(!xIsNext)
-		currentMove++
-	}
-
-	function resetGame() {
-		currentMove = 0
-		setXIsNext(true)
-		setSquares(Array(9).fill(null))
+		onPlay(nextSquares)
 	}
 
 	const winner = calculateWinner(squares)
@@ -59,6 +46,59 @@ export default function Board() {
 				<Square value={squares[8]} onSquareClick={() => handleClick(8)} />
 			</div>
 		</>
+	)
+}
+
+export default function Game() {
+	const [history, setHistory] = useState([Array(9).fill(null)])
+	const [currentMove, setCurrentMove] = useState(0)
+	const currentSquares = history[currentMove]
+	const xIsNext = currentMove % 2 === 0
+
+	function handlePlay(nextSquares) {
+		const nextHistory = [...history.slice(0, currentMove + 1), nextSquares]
+		setHistory(nextHistory)
+		setCurrentMove(nextHistory.length - 1)
+	}
+
+	function resetGame() {
+		setHistory([Array(9).fill(null)])
+		setCurrentMove(0)
+	}
+
+	function jumpTo(nextMove) {
+		setCurrentMove(nextMove)
+	}
+
+	const moves = history.map((squares, move) => {
+		let description
+		if (move > 0) {
+			description = `Go to move #${move}`
+		} else {
+			description = 'Go to game start'
+		}
+		return (
+			<li key={move}>
+				<button onClick={() => jumpTo(move)}>{description}</button>
+			</li>
+		)
+	})
+
+	return (
+		<div className='game'>
+			<div className='game-board'>
+				<Board
+					xIsNext={xIsNext}
+					squares={currentSquares}
+					onPlay={handlePlay}
+					resetGame={resetGame}
+					currentMove={currentMove}
+				/>
+			</div>
+			<div className='game-info'>
+				<ol>{moves}</ol>
+			</div>
+		</div>
 	)
 }
 
