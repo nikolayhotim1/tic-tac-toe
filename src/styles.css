@@ -93,7 +93,11 @@ body {
 }
 
 .win {
-	background: lightblue;
+	background: skyblue;
+}
+
+.current {
+	background: deepskyblue;
 }
 
 li {
