@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
-function Square({ value, onSquareClick }) {
+function Square({ value, onSquareClick, className }) {
 	return (
-		<button className='square' onClick={onSquareClick}>
+		<button className={`square ${className}`} onClick={onSquareClick}>
 			{value}
 		</button>
 	)
@@ -16,35 +16,53 @@ function Board({ xIsNext, squares, onPlay, resetGame, currentMove }) {
 		onPlay(nextSquares)
 	}
 
-	const winner = calculateWinner(squares)
+	const winnerData = calculateWinner(squares)
 	let status
-	if (winner) {
+	const squaresStyles = Array(9).fill(null)
+	if (winnerData) {
+		const [winner, winSquares] = winnerData
 		status = `Winner: ${winner}`
+		for (const square of winSquares) {
+			squaresStyles[square] = 'win'
+		}
 	} else if (currentMove === 9) {
-		status = 'There is a draw in the game'
+		status = 'Draw'
 	} else {
 		status = `Next player: ${xIsNext ? 'X' : 'O'}`
+	}
+
+	const board = []
+	const boardSquares = squares.map((square, index) => (
+		<Square
+			key={index}
+			className={squaresStyles[index]}
+			value={square}
+			onSquareClick={() => handleClick(index)}
+		/>
+	))
+	let squareIndex = 0
+	for (let i = 0; i < 3; i++) {
+		const columns = []
+		for (let j = 0; j < 3; j++) {
+			columns.push(boardSquares[squareIndex])
+			squareIndex++
+		}
+		board.push(
+			<div key={i} className='board-row'>
+				{columns}
+			</div>
+		)
 	}
 
 	return (
 		<>
 			<div className='status'>{status}</div>
-			{(winner || currentMove === 9) && <button onClick={resetGame}>New game</button>}
-			<div className='board-row'>
-				<Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-				<Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-				<Square value={squares[2]} onSquareClick={() => handleClick(2)} />
-			</div>
-			<div className='board-row'>
-				<Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-				<Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-				<Square value={squares[5]} onSquareClick={() => handleClick(5)} />
-			</div>
-			<div className='board-row'>
-				<Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-				<Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-				<Square value={squares[8]} onSquareClick={() => handleClick(8)} />
-			</div>
+			{(winnerData || currentMove === 9) && (
+				<button className='reset' onClick={resetGame}>
+					New game
+				</button>
+			)}
+			{board}
 		</>
 	)
 }
@@ -53,6 +71,7 @@ export default function Game() {
 	const [history, setHistory] = useState([Array(9).fill(null)])
 	const [currentMove, setCurrentMove] = useState(0)
 	const currentSquares = history[currentMove]
+	const [isDescending, setIsDescending] = useState(false)
 	const xIsNext = currentMove % 2 === 0
 
 	function handlePlay(nextSquares) {
@@ -70,16 +89,30 @@ export default function Game() {
 		setCurrentMove(nextMove)
 	}
 
+	function handleSortHistory() {
+		setIsDescending(!isDescending)
+	}
+
 	const moves = history.map((squares, move) => {
 		let description
 		if (move > 0) {
-			description = `Go to move #${move}`
+			if (move !== currentMove) {
+				description = `Go to move #${move}`
+			} else {
+				description = `You are at move #${move}`
+			}
+		} else if (move === currentMove) {
+			description = 'You are at game start'
 		} else {
 			description = 'Go to game start'
 		}
 		return (
 			<li key={move}>
-				<button onClick={() => jumpTo(move)}>{description}</button>
+				{move !== currentMove ? (
+					<button onClick={() => jumpTo(move)}>{description}</button>
+				) : (
+					description
+				)}
 			</li>
 		)
 	})
@@ -96,7 +129,10 @@ export default function Game() {
 				/>
 			</div>
 			<div className='game-info'>
-				<ol>{moves}</ol>
+				<button onClick={handleSortHistory}>
+					Switch to sort by {isDescending ? 'asending' : 'descending'}
+				</button>
+				<ol>{isDescending ? moves.reverse() : moves}</ol>
 			</div>
 		</div>
 	)
@@ -115,7 +151,9 @@ function calculateWinner(squares) {
 	]
 	for (let i = 0; i < lines.length; i++) {
 		const [a, b, c] = lines[i]
-		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) return squares[a]
+		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+			return [squares[a], lines[i]]
+		}
 	}
 	return null
 }

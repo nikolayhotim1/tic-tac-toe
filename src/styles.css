@@ -42,7 +42,8 @@ code {
 	font-size: 1.2em;
 }
 
-ul {
+ul,
+ol {
 	padding-left: 20px;
 }
 
@@ -77,7 +78,8 @@ body {
 	display: table;
 }
 
-.status {
+.status,
+.reset {
 	margin-bottom: 10px;
 }
 
@@ -88,4 +90,12 @@ body {
 
 .game-info {
 	margin-left: 20px;
+}
+
+.win {
+	background: lightblue;
+}
+
+li {
+	margin-bottom: 5px;
 }
