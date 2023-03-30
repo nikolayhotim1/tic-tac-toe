@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-function Square({ value, onSquareClick, className }) {
+function Square({ className, value, onSquareClick }) {
 	return (
 		<button className={`square ${className}`} onClick={onSquareClick}>
 			{value}
@@ -8,25 +8,19 @@ function Square({ value, onSquareClick, className }) {
 	)
 }
 
-function Board({
-	xIsNext,
-	squares,
-	onPlay,
-	resetGame,
-	currentMove,
-	onAddLocation,
-	currentMoveSquare
-}) {
+function Board({ move, moveSquare, squares, xIsNext, onPlay, onAddLocation, onResetGame }) {
 	function handleClick(i) {
-		if (calculateWinner(squares) || squares[i]) return
+		if (calculateWinner(squares) || squares[i]) {
+			return
+		}
 		onAddLocation(i)
 		const nextSquares = squares.slice()
 		xIsNext ? (nextSquares[i] = 'X') : (nextSquares[i] = 'O')
 		onPlay(nextSquares)
 	}
 
-	const winnerData = calculateWinner(squares)
 	let status
+	const winnerData = calculateWinner(squares)
 	const squaresStyles = Array(9).fill(null)
 	if (winnerData) {
 		const [winner, winSquares] = winnerData
@@ -34,7 +28,7 @@ function Board({
 		for (const square of winSquares) {
 			squaresStyles[square] = 'win'
 		}
-	} else if (currentMove === 9) {
+	} else if (move === 9) {
 		status = 'Draw'
 	} else {
 		status = `Next player: ${xIsNext ? 'X' : 'O'}`
@@ -43,7 +37,7 @@ function Board({
 	const board = []
 	const boardSquares = squares.map((square, index) => {
 		let squareStyle = null
-		if (index === currentMoveSquare) {
+		if (index === moveSquare) {
 			squareStyle = 'current'
 		}
 		return (
@@ -55,6 +49,7 @@ function Board({
 			/>
 		)
 	})
+
 	let squareIndex = 0
 	for (let i = 0; i < 3; i++) {
 		const columns = []
@@ -72,8 +67,8 @@ function Board({
 	return (
 		<>
 			<div className='status'>{status}</div>
-			{(winnerData || currentMove === 9) && (
-				<button className='reset' onClick={resetGame}>
+			{(winnerData || move === 9) && (
+				<button className='reset' onClick={onResetGame}>
 					New game
 				</button>
 			)}
@@ -87,10 +82,9 @@ export default function Game() {
 	const [locationHistory, setLocationHistory] = useState([null])
 	const [currentMove, setCurrentMove] = useState(0)
 	const [currentMoveSquare, setCurrentMoveSquare] = useState(null)
-	const currentSquares = history[currentMove]
 	const [isDescending, setIsDescending] = useState(false)
+	const currentSquares = history[currentMove]
 	const xIsNext = currentMove % 2 === 0
-
 	const locations = {
 		0: 'row: 1, col: 1',
 		1: 'row: 1, col: 2',
@@ -109,11 +103,10 @@ export default function Game() {
 		setCurrentMove(nextHistory.length - 1)
 	}
 
-	function resetGame() {
-		setHistory([Array(9).fill(null)])
-		setLocationHistory([null])
-		setCurrentMoveSquare(null)
-		setCurrentMove(0)
+	function handleAddLocation(i) {
+		const nextLocationHistory = [...locationHistory.slice(0, currentMove + 1), locations[i]]
+		setLocationHistory(nextLocationHistory)
+		setCurrentMoveSquare(i)
 	}
 
 	function jumpTo(nextMove, locationHistoryMove) {
@@ -127,10 +120,11 @@ export default function Game() {
 		setIsDescending(!isDescending)
 	}
 
-	function handleAddLocation(i) {
-		const nextLocationHistory = [...locationHistory.slice(0, currentMove + 1), locations[i]]
-		setLocationHistory(nextLocationHistory)
-		setCurrentMoveSquare(i)
+	function handleResetGame() {
+		setHistory([Array(9).fill(null)])
+		setLocationHistory([null])
+		setCurrentMove(0)
+		setCurrentMoveSquare(null)
 	}
 
 	const moves = history.map((squares, move) => {
@@ -163,13 +157,13 @@ export default function Game() {
 		<div className='game'>
 			<div className='game-board'>
 				<Board
-					xIsNext={xIsNext}
+					move={currentMove}
+					moveSquare={currentMoveSquare}
 					squares={currentSquares}
+					xIsNext={xIsNext}
 					onPlay={handlePlay}
-					resetGame={resetGame}
-					currentMove={currentMove}
 					onAddLocation={handleAddLocation}
-					currentMoveSquare={currentMoveSquare}
+					onResetGame={handleResetGame}
 				/>
 			</div>
 			<div className='game-info'>
