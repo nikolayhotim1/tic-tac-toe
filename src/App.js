@@ -18,8 +18,8 @@ function Board({
 	currentMoveSquare
 }) {
 	function handleClick(i) {
-		onAddLocation(i, winnerData)
 		if (calculateWinner(squares) || squares[i]) return
+		onAddLocation(i)
 		const nextSquares = squares.slice()
 		xIsNext ? (nextSquares[i] = 'X') : (nextSquares[i] = 'O')
 		onPlay(nextSquares)
@@ -42,7 +42,7 @@ function Board({
 
 	const board = []
 	const boardSquares = squares.map((square, index) => {
-		let squareStyle
+		let squareStyle = null
 		if (index === currentMoveSquare) {
 			squareStyle = 'current'
 		}
@@ -127,12 +127,10 @@ export default function Game() {
 		setIsDescending(!isDescending)
 	}
 
-	function handleAddLocation(i, winnerData) {
-		if (!winnerData && currentMove !== 9) {
-			const nextLocationHistory = [...locationHistory.slice(0, currentMove + 1), locations[i]]
-			setLocationHistory(nextLocationHistory)
-			setCurrentMoveSquare(i)
-		}
+	function handleAddLocation(i) {
+		const nextLocationHistory = [...locationHistory.slice(0, currentMove + 1), locations[i]]
+		setLocationHistory(nextLocationHistory)
+		setCurrentMoveSquare(i)
 	}
 
 	const moves = history.map((squares, move) => {
