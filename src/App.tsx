@@ -1,3 +1,4 @@
+import React from 'react'
 import { useState } from 'react'
 
 function Square({ className, value, onSquareClick }) {
@@ -9,7 +10,7 @@ function Square({ className, value, onSquareClick }) {
 }
 
 function Board({ move, moveSquare, squares, xIsNext, onPlay, onAddLocation, onResetGame }) {
-	function handleClick(i) {
+	function handleClick(i: number) {
 		if (calculateWinner(squares) || squares[i]) {
 			return
 		}
@@ -19,7 +20,7 @@ function Board({ move, moveSquare, squares, xIsNext, onPlay, onAddLocation, onRe
 		onPlay(nextSquares)
 	}
 
-	let status
+	let status: string
 	const winnerData = calculateWinner(squares)
 	const squaresStyles = Array(9).fill(null)
 	if (winnerData) {
@@ -34,9 +35,9 @@ function Board({ move, moveSquare, squares, xIsNext, onPlay, onAddLocation, onRe
 		status = `Next player: ${xIsNext ? 'X' : 'O'}`
 	}
 
-	const board = []
-	const boardSquares = squares.map((square, index) => {
-		let squareStyle = null
+	const board: JSX.Element[] = []
+	const boardSquares: JSX.Element[] = squares.map((square: string, index: number) => {
+		let squareStyle: string | null = null
 		if (index === moveSquare) {
 			squareStyle = 'current'
 		}
@@ -52,7 +53,7 @@ function Board({ move, moveSquare, squares, xIsNext, onPlay, onAddLocation, onRe
 
 	let squareIndex = 0
 	for (let i = 0; i < 3; i++) {
-		const columns = []
+		const columns: JSX.Element[] = []
 		for (let j = 0; j < 3; j++) {
 			columns.push(boardSquares[squareIndex])
 			squareIndex++
@@ -78,14 +79,24 @@ function Board({ move, moveSquare, squares, xIsNext, onPlay, onAddLocation, onRe
 }
 
 export default function Game() {
-	const [history, setHistory] = useState([Array(9).fill(null)])
-	const [locationHistory, setLocationHistory] = useState([null])
-	const [currentMove, setCurrentMove] = useState(0)
-	const [currentMoveSquare, setCurrentMoveSquare] = useState(null)
-	const [isDescending, setIsDescending] = useState(false)
-	const currentSquares = history[currentMove]
-	const xIsNext = currentMove % 2 === 0
-	const locations = {
+	const [history, setHistory] = useState<(string | null)[][]>([Array(9).fill(null)])
+	const [locationHistory, setLocationHistory] = useState<(string | null)[]>([null])
+	const [currentMove, setCurrentMove] = useState<number>(0)
+	const [currentMoveSquare, setCurrentMoveSquare] = useState<number | null>(null)
+	const [isDescending, setIsDescending] = useState<boolean>(false)
+	const currentSquares: (string | null)[] = history[currentMove]
+	const xIsNext: boolean = currentMove % 2 === 0
+	const locations: {
+		0: string
+		1: string
+		2: string
+		3: string
+		4: string
+		5: string
+		6: string
+		7: string
+		8: string
+	} = {
 		0: 'row: 1, col: 1',
 		1: 'row: 1, col: 2',
 		2: 'row: 1, col: 3',
@@ -97,21 +108,22 @@ export default function Game() {
 		8: 'row: 3, col: 3'
 	}
 
-	function handlePlay(nextSquares) {
+	function handlePlay(nextSquares: string[]) {
 		const nextHistory = [...history.slice(0, currentMove + 1), nextSquares]
 		setHistory(nextHistory)
 		setCurrentMove(nextHistory.length - 1)
 	}
 
-	function handleAddLocation(i) {
+	function handleAddLocation(i: number) {
 		const nextLocationHistory = [...locationHistory.slice(0, currentMove + 1), locations[i]]
 		setLocationHistory(nextLocationHistory)
 		setCurrentMoveSquare(i)
 	}
 
-	function jumpTo(nextMove, locationHistoryMove) {
+	function jumpTo(nextMove: number, locationHistoryMove: string) {
 		setCurrentMove(nextMove)
 		setCurrentMoveSquare(
+			// @ts-ignore
 			Number(Object.keys(locations).find(key => locations[key] === locationHistoryMove))
 		)
 	}
@@ -128,7 +140,7 @@ export default function Game() {
 	}
 
 	const moves = history.map((squares, move) => {
-		let description
+		let description: string
 		if (move > 0) {
 			if (move !== currentMove) {
 				description = `Go to move #${move} (${locationHistory[move]})`
@@ -143,6 +155,7 @@ export default function Game() {
 		return (
 			<li key={move}>
 				{move !== currentMove ? (
+					// @ts-ignore
 					<button onClick={() => jumpTo(move, locationHistory[move])}>
 						{description}
 					</button>
@@ -176,7 +189,7 @@ export default function Game() {
 	)
 }
 
-function calculateWinner(squares) {
+function calculateWinner(squares: string[]) {
 	const lines = [
 		[0, 1, 2],
 		[3, 4, 5],
