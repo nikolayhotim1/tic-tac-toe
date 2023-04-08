@@ -1,8 +1,6 @@
 {
-  "extends": [
-    "development"
-  ],
-  "hints": {
-    "button-type": "off"
-  }
+	"extends": ["development"],
+	"hints": {
+		"button-type": "off"
+	}
 }
