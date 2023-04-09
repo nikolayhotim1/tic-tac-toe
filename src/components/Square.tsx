@@ -1,9 +1,14 @@
-import React from 'react'
-import { SquareProps } from '../types/types'
+import React, { MouseEventHandler } from 'react'
+
+type SquareProps = {
+	className: string
+	value: string | null
+	onSquareClick: MouseEventHandler<HTMLButtonElement>
+}
 
 export default function Square({ className, value, onSquareClick }: SquareProps) {
 	return (
-		<button className={`square ${className}`} onClick={onSquareClick}>
+		<button type='button' className={`square ${className}`} onClick={onSquareClick}>
 			{value}
 		</button>
 	)

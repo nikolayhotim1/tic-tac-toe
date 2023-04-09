@@ -8,53 +8,13 @@ body {
 	padding: 0;
 }
 
-h1 {
-	margin-top: 0;
-	font-size: 22px;
-}
-
-h2 {
-	margin-top: 0;
-	font-size: 20px;
-}
-
-h3 {
-	margin-top: 0;
-	font-size: 18px;
-}
-
-h4 {
-	margin-top: 0;
-	font-size: 16px;
-}
-
-h5 {
-	margin-top: 0;
-	font-size: 14px;
-}
-
-h6 {
-	margin-top: 0;
-	font-size: 12px;
-}
-
 code {
 	font-size: 1.2em;
 }
 
-ul,
-ol {
-	padding-left: 20px;
-}
-
-* {
-	box-sizing: border-box;
-}
-
-body {
-	font-family: sans-serif;
-	margin: 20px;
-	padding: 0;
+ul {
+	list-style: none;
+	padding-inline-start: 0;
 }
 
 .square {
@@ -63,13 +23,13 @@ body {
 	float: left;
 	font-size: 24px;
 	font-weight: bold;
-	line-height: 34px;
-	height: 34px;
+	line-height: 35px;
+	height: 35px;
 	margin-right: -1px;
 	margin-top: -1px;
 	padding: 0;
 	text-align: center;
-	width: 34px;
+	width: 35px;
 }
 
 .board-row:after {
@@ -78,9 +38,10 @@ body {
 	display: table;
 }
 
+li,
 .status,
 .reset {
-	margin-bottom: 10px;
+	margin-bottom: 5px;
 }
 
 .game {
@@ -88,8 +49,8 @@ body {
 	flex-direction: row;
 }
 
-.game-info {
-	margin-left: 20px;
+.game-board {
+	margin-right: 20px;
 }
 
 .win {
@@ -98,8 +59,4 @@ body {
 
 .current {
 	background: deepskyblue;
-}
-
-li {
-	margin-bottom: 5px;
 }

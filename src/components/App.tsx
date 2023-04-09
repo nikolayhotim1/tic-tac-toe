@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import Board from './Board'
-import { Locations } from '../types/types'
 
 export default function App() {
 	const [history, setHistory] = useState([Array<string | null>(9).fill(null)])
@@ -10,6 +9,19 @@ export default function App() {
 	const [isDescending, setIsDescending] = useState(false)
 	const xIsNext = currentMove % 2 === 0
 	const currentSquares = history[currentMove]
+
+	type Locations = {
+		0: string
+		1: string
+		2: string
+		3: string
+		4: string
+		5: string
+		6: string
+		7: string
+		8: string
+	}
+
 	const locations: Locations = {
 		0: 'row: 1, col: 1',
 		1: 'row: 1, col: 2',
@@ -72,7 +84,9 @@ export default function App() {
 		return (
 			<li key={move}>
 				{move !== currentMove ? (
-					<button onClick={() => jumpTo(move, locationHistory[move])}>{description}</button>
+					<button type='button' onClick={() => jumpTo(move, locationHistory[move])}>
+						{description}
+					</button>
 				) : (
 					description
 				)}
@@ -82,7 +96,6 @@ export default function App() {
 
 	return (
 		<>
-			<h1>Tic-Tac-Toe</h1>
 			<div className='game'>
 				<div className='game-board'>
 					<Board
@@ -96,8 +109,10 @@ export default function App() {
 					/>
 				</div>
 				<div className='game-info'>
-					<button onClick={handleSortHistory}>Sort by {isDescending ? 'asending' : 'descending'}</button>
-					<ol>{isDescending ? moves.reverse() : moves}</ol>
+					<button type='button' onClick={handleSortHistory}>
+						Sort by {isDescending ? 'asending' : 'descending'}
+					</button>
+					<ul>{isDescending ? moves.reverse() : moves}</ul>
 				</div>
 			</div>
 		</>
