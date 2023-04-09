@@ -1,0 +1,2 @@
+*{box-sizing:border-box}body{font-family:sans-serif;margin:20px;padding:0}code{font-size:1.2em}.game-info,ol,ul{padding-left:20px}.square{background:#fff;border:1px solid #999;float:left;font-size:24px;font-weight:700;height:34px;line-height:34px;margin-right:-1px;margin-top:-1px;padding:0;text-align:center;width:34px}.board-row:after{clear:both;content:"";display:table}.reset,.status,li{margin-bottom:5px}.game{display:flex;flex-direction:row;flex-wrap:nowrap}.win{background:skyblue}.current{background:#00bfff}
+/*# sourceMappingURL=main.7d05665a.css.map*/
