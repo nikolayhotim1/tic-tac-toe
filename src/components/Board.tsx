@@ -1,18 +1,9 @@
 import React from 'react'
+import { Moves, SquareValues, SquareIndices } from './App'
 import Square from './Square'
 
-type BoardProps = {
-	move: number
-	moveSquare: number | null
-	xIsNext: boolean
-	squares: (string | null)[]
-	onPlay: (nextSquares: (string | null)[]) => void
-	onAddLocation: (i: number) => void
-	onResetGame: () => void
-}
-
 export default function Board({ move, moveSquare, xIsNext, squares, onPlay, onAddLocation, onResetGame }: BoardProps) {
-	function handleClick(i: number) {
+	function handleClick(i: SquareIndices) {
 		if (calculateWinner(squares) || squares[i]) {
 			return
 		}
@@ -22,10 +13,10 @@ export default function Board({ move, moveSquare, xIsNext, squares, onPlay, onAd
 		onPlay(nextSquares)
 	}
 
-	let status: string
+	let status: Statuses
 	const winnerData = calculateWinner(squares)
-	const squaresStyles = Array<string>(9).fill('')
-	if (winnerData) {
+	const squaresStyles = Array<SquaresStyles>(9).fill('')
+	if (winnerData !== null && winnerData.winner !== null) {
 		status = `Winner: ${winnerData.winner}`
 		for (const square of winnerData.winSquares) {
 			squaresStyles[square] = 'win'
@@ -35,20 +26,19 @@ export default function Board({ move, moveSquare, xIsNext, squares, onPlay, onAd
 	} else {
 		status = `Next player: ${xIsNext ? 'X' : 'O'}`
 	}
-
 	const boardSquares: JSX.Element[] = squares.map((square, index) => {
-		let squareStyle = ''
+		let squareStyle: SquareStyle = ''
 		index === moveSquare && (squareStyle = 'current')
+		const squareClass: SquareClasses = `${squaresStyles[index]} ${squareStyle}`
 		return (
 			<Square
 				key={index}
-				className={`${squaresStyles[index]} ${squareStyle}`}
+				className={squareClass}
 				value={square}
-				onSquareClick={() => handleClick(index)}
+				onSquareClick={() => handleClick(index as SquareIndices)}
 			/>
 		)
 	})
-
 	let squareIndex = 0
 	const board: JSX.Element[] = []
 	for (let i = 0; i < 3; i++) {
@@ -63,7 +53,6 @@ export default function Board({ move, moveSquare, xIsNext, squares, onPlay, onAd
 			</div>
 		)
 	}
-
 	return (
 		<>
 			<div className='status'>{status}</div>
@@ -77,7 +66,7 @@ export default function Board({ move, moveSquare, xIsNext, squares, onPlay, onAd
 	)
 }
 
-function calculateWinner(squares: (string | null)[]) {
+function calculateWinner(squares: (SquareValues | null)[]) {
 	const lines = [
 		[0, 1, 2],
 		[3, 4, 5],
@@ -87,12 +76,26 @@ function calculateWinner(squares: (string | null)[]) {
 		[2, 5, 8],
 		[0, 4, 8],
 		[2, 4, 6]
-	]
-	for (let i = 0; i < lines.length; i++) {
-		const [a, b, c] = lines[i]
+	] as const
+	for (let line of lines) {
+		const [a, b, c] = line
 		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-			return { winner: squares[a], winSquares: lines[i] }
+			return { winner: squares[a], winSquares: line }
 		}
 	}
 	return null
 }
+
+type BoardProps = {
+	move: Moves
+	moveSquare: SquareIndices | null
+	xIsNext: boolean
+	squares: (SquareValues | null)[]
+	onPlay: (nextSquares: (SquareValues | null)[]) => void
+	onAddLocation: (i: SquareIndices) => void
+	onResetGame: () => void
+}
+type Statuses = 'Next player: X' | 'Next player: O' | 'Draw' | 'Winner: X' | 'Winner: O'
+type SquaresStyles = '' | 'win'
+type SquareStyle = '' | 'current'
+export type SquareClasses = ' ' | 'win ' | ' current' | 'win current'

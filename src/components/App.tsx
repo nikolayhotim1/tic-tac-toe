@@ -2,60 +2,41 @@ import React, { useState } from 'react'
 import Board from './Board'
 
 export default function App() {
-	const [history, setHistory] = useState([Array<string | null>(9).fill(null)])
-	const [locationHistory, setLocationHistory] = useState<(string | null)[]>([null])
-	const [currentMove, setCurrentMove] = useState(0)
-	const [currentMoveSquare, setCurrentMoveSquare] = useState<number | null>(null)
+	const [history, setHistory] = useState([Array<SquareValues | null>(9).fill(null)])
+	const [locationHistory, setLocationHistory] = useState<(Locations | null)[]>([null])
+	const [currentMove, setCurrentMove] = useState<Moves>(0)
+	const [currentMoveSquare, setCurrentMoveSquare] = useState<SquareIndices | null>(null)
 	const [isDescending, setIsDescending] = useState(false)
 	const xIsNext = currentMove % 2 === 0
 	const currentSquares = history[currentMove]
+	const locations = [
+		'row: 1, col: 1',
+		'row: 1, col: 2',
+		'row: 1, col: 3',
+		'row: 2, col: 1',
+		'row: 2, col: 2',
+		'row: 2, col: 3',
+		'row: 3, col: 1',
+		'row: 3, col: 2',
+		'row: 3, col: 3'
+	] as const
 
-	type Locations = {
-		0: string
-		1: string
-		2: string
-		3: string
-		4: string
-		5: string
-		6: string
-		7: string
-		8: string
-	}
-
-	const locations: Locations = {
-		0: 'row: 1, col: 1',
-		1: 'row: 1, col: 2',
-		2: 'row: 1, col: 3',
-		3: 'row: 2, col: 1',
-		4: 'row: 2, col: 2',
-		5: 'row: 2, col: 3',
-		6: 'row: 3, col: 1',
-		7: 'row: 3, col: 2',
-		8: 'row: 3, col: 3'
-	}
-
-	function handlePlay(nextSquares: (string | null)[]) {
+	function handlePlay(nextSquares: (SquareValues | null)[]) {
 		const nextHistory = [...history.slice(0, currentMove + 1), nextSquares]
 		setHistory(nextHistory)
-		setCurrentMove(nextHistory.length - 1)
+		setCurrentMove((nextHistory.length - 1) as Moves)
 	}
 
-	function handleAddLocation(i: number) {
-		const nextLocationHistory = [...locationHistory.slice(0, currentMove + 1), locations[i as keyof typeof locations]]
+	function handleAddLocation(i: SquareIndices) {
+		const nextLocationHistory = [...locationHistory.slice(0, currentMove + 1), locations[i]]
 		setLocationHistory(nextLocationHistory)
 		setCurrentMoveSquare(i)
 	}
 
-	function jumpTo(nextMove: number, locationHistoryMove: string | null) {
+	function jumpTo(nextMove: Moves, locationHistoryMove: Locations | null) {
 		setCurrentMove(nextMove)
-		nextMove > 0
-			? setCurrentMoveSquare(
-					Number(
-						Object.keys(locations).find(
-							key => locations[key as unknown as keyof typeof locations] === locationHistoryMove
-						)
-					)
-			  )
+		nextMove > 0 && locationHistoryMove
+			? setCurrentMoveSquare(locations.indexOf(locationHistoryMove) as SquareIndices)
 			: setCurrentMoveSquare(null)
 	}
 
@@ -84,7 +65,7 @@ export default function App() {
 		return (
 			<li key={move}>
 				{move !== currentMove ? (
-					<button type='button' onClick={() => jumpTo(move, locationHistory[move])}>
+					<button type='button' onClick={() => jumpTo(move as Moves, locationHistory[move])}>
 						{description}
 					</button>
 				) : (
@@ -93,7 +74,6 @@ export default function App() {
 			</li>
 		)
 	})
-
 	return (
 		<>
 			<div className='game'>
@@ -118,3 +98,17 @@ export default function App() {
 		</>
 	)
 }
+
+type Locations =
+	| 'row: 1, col: 1'
+	| 'row: 1, col: 2'
+	| 'row: 1, col: 3'
+	| 'row: 2, col: 1'
+	| 'row: 2, col: 2'
+	| 'row: 2, col: 3'
+	| 'row: 3, col: 1'
+	| 'row: 3, col: 2'
+	| 'row: 3, col: 3'
+export type Moves = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+export type SquareValues = 'X' | 'O'
+export type SquareIndices = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
