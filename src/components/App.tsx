@@ -52,11 +52,11 @@ export default function App() {
 	}
 
 	const moves = history.map((_squares, move) => {
-		let description: string
+		let description: Descriptions
 		if (move > 0) {
 			move !== currentMove
-				? (description = `Go to move #${move} (${locationHistory[move]})`)
-				: (description = `You are at move #${move} (${locationHistory[move]})`)
+				? (description = `Go to move #${move as Moves} (${locationHistory[move] as Locations})`)
+				: (description = `You are at move #${move as Moves} (${locationHistory[move] as Locations})`)
 		} else if (move === currentMove) {
 			description = 'You are at game start'
 		} else {
@@ -112,3 +112,8 @@ type Locations =
 export type Moves = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 export type SquareValues = 'X' | 'O'
 export type SquareIndices = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
+type Descriptions =
+	| `Go to move #${Moves} (${Locations})`
+	| `You are at move #${Moves} (${Locations})`
+	| 'You are at game start'
+	| 'Go to game start'
